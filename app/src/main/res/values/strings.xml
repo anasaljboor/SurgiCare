@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SurgiCare</string>
+    <string name="web_client_id">634818751151-9b713bqsd6tr2ngahsi572rtdbqgla8u.apps.googleusercontent.com</string>
+    <string name="surgicare">SurgiCare\n</string>
+    <string name="Caring_for_You_Virtually">Caring for You, Virtually\n</string>
+    <string name="Login_to_SurgiCare">Login</string>
+</resources>

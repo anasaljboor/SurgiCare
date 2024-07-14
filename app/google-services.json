@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "634818751151",
+    "project_id": "surgicare-eb114",
+    "storage_bucket": "surgicare-eb114.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634818751151:android:cb5f2894e390034a11c25a",
+        "android_client_info": {
+          "package_name": "com.example.surgicare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhrw1davaozWyAZxbT08KT8vqz0TkaQvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
