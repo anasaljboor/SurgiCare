@@ -33,22 +33,29 @@ fun GoogleLoginButton(
     onClick: () -> Unit,
     text: String
 ) {
-    Row (modifier = modifier.clip(RoundedCornerShape(4.dp))
-        .googleLoginButton()
-        .clickable(onClick = onClick)
-        .height(40.dp),
-        verticalAlignment = Alignment.CenterVertically
-        , horizontalArrangement = Arrangement.Center
-    ){
-        Image(painter = painterResource(id = iconResId), contentDescription = null, modifier = Modifier.size(16.dp))
+    Row(
+        modifier = modifier
+            .googleLoginButton()  // Apply your custom modifier
+            .clickable(onClick = onClick)
+            .height(40.dp)
+            .clip(RoundedCornerShape(4.dp)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = iconResId),
+            contentDescription = null,
+            modifier = Modifier.size(16.dp)
+        )
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = text, style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFF64748B)))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black // Dynamically change color
+            )
+        )
     }
 }
-
-
-
-
 
 fun Modifier.googleLoginButton(): Modifier = composed {
     if (isSystemInDarkTheme()) {
@@ -57,7 +64,7 @@ fun Modifier.googleLoginButton(): Modifier = composed {
             color = DarkTealGreen,
             shape = RoundedCornerShape(4.dp),
         )
-    } else{
+    } else {
         background(PrimaryTealGreen)
     }
 }

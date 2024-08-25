@@ -2,12 +2,17 @@ package com.example.surgicare.SignIn
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialogDefaults.shape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -23,11 +28,16 @@ import com.example.surgicare.R
 import com.example.surgicare.ui.theme.DarkTealGreen
 import com.example.surgicare.ui.theme.PrimaryTealGreen
 import com.example.surgicare.ui.theme.Roboto
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun SignInScreen(
     state: SignInState,
-    onSignInClick: () -> Unit // Lambda that handles the sign-in click
+    onSignInClick: () -> Unit,
+    googleAuthClient: GoogleAuthClient,
+    onNavigateToRegister: () -> Unit,
+    onNavigateToVitals: () -> Unit // Add this parameter for navigation to Vitals
 ) {
     val context = LocalContext.current
 
@@ -38,15 +48,22 @@ fun SignInScreen(
         }
     }
 
+    // Navigate to Vitals screen on successful sign-in
+    LaunchedEffect(state.isSignInSuccessful) {
+        if (state.isSignInSuccessful) {
+            onNavigateToVitals()
+        }
+    }
+
     Surface {
         Column(modifier = Modifier.fillMaxSize()) {
             TopSection()
             Spacer(modifier = Modifier.height(36.dp))
-            googleButtonSection(onSignInClick)
-            RegistrationSection()
+            googleButtonSection(onSignInClick, googleAuthClient)
+            Spacer(modifier = Modifier.height(36.dp))
+            RegistrationSection(onNavigateToRegister)
         }
 
-        // Display a loading indicator while signing in
         if (state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -58,48 +75,59 @@ fun SignInScreen(
     }
 }
 
+
+
 @Composable
-private fun RegistrationSection() {
+private fun RegistrationSection(onNavigateToRegister: () -> Unit) {
     val uiColor = if (isSystemInDarkTheme()) Color.White else Color.Black
     Box(
         modifier = Modifier
-            .fillMaxHeight(fraction = 0.8f)
             .fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        Text(text = buildAnnotatedString {
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xFF64748B),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = Roboto
-                )
-            ) {
-                append("Don't have an account? ")
+        Text(
+            text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color(0xFF64748B),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = Roboto
+                    )
+                ) {
+                    append("Don't have an account? ")
+                }
+                withStyle(
+                    style = SpanStyle(
+                        color = uiColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = Roboto
+                    )
+                ) {
+                    append("Create now")
+                }
+            },
+            modifier = Modifier.clickable {
+                onNavigateToRegister() // Trigger navigation when text is clicked
             }
-            withStyle(
-                style = SpanStyle(
-                    color = uiColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = Roboto
-                )
-            ) {
-                append("Create now")
-            }
-        })
+        )
     }
 }
 
+
 @Composable
-private fun googleButtonSection(onSignInClick: () -> Unit) {
+private fun googleButtonSection(onSignInClick: () -> Unit,googleAuthClient: GoogleAuthClient) {
+
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(horizontal = 30.dp)
+
     ) {
-        LoginSection(onSignInClick)
+
+        LoginSection(password = password , email = email, googleAuthClient = googleAuthClient)
         Spacer(modifier = Modifier.height(30.dp))
         Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -120,16 +148,26 @@ private fun googleButtonSection(onSignInClick: () -> Unit) {
 }
 
 @Composable
-fun LoginSection(onSignInClick: () -> Unit) {
-    LoginTextfield(label = "Email", trailing = "", modifier = Modifier.fillMaxWidth())
+fun LoginSection(email :MutableState<String>, password :MutableState<String>,googleAuthClient: GoogleAuthClient) {
+    val coroutineScope = rememberCoroutineScope()
+    suspend fun Login(){
+    googleAuthClient.signInWithEmail(email=email.value,password=password.value)
+    }
+
+    LoginTextfield(label = "Email", trailing = "", modifier = Modifier.fillMaxWidth(),email = email)
     Spacer(modifier = Modifier.height(16.dp))
-    LoginTextfield(label = "Password", trailing = "Forgot?", modifier = Modifier.fillMaxWidth())
+    LoginTextfield(label = "Password", trailing = "Forgot?", modifier = Modifier.fillMaxWidth(),email = password)
     Spacer(modifier = Modifier.height(16.dp))
     Button(
         modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
             .fillMaxWidth()
             .height(40.dp),
-        onClick = { onSignInClick() },
+        onClick = {
+            coroutineScope.launch {
+                Login()
+            }
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isSystemInDarkTheme()) DarkTealGreen else PrimaryTealGreen,
             contentColor = Color.White
@@ -141,6 +179,7 @@ fun LoginSection(onSignInClick: () -> Unit) {
         )
     }
 }
+
 
 @Composable
 private fun ColumnScope.TopSection() {
@@ -179,4 +218,5 @@ private fun ColumnScope.TopSection() {
                 .align(Alignment.BottomCenter)
         )
     }
+
 }

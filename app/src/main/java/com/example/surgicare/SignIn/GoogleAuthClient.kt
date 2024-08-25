@@ -34,7 +34,11 @@ class GoogleAuthClient(private val context: Context, private val oneTapClient: S
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         return try {
+
             val user = auth.signInWithCredential(googleCredentials).await().user
+            if (user != null) {
+                println(user.displayName)
+            }
             user?.let {
                 // Save user role as "patient" in Firestore
                 val userData = UserData(
@@ -65,6 +69,9 @@ class GoogleAuthClient(private val context: Context, private val oneTapClient: S
     suspend fun signInWithEmail(email: String, password: String): signinresults {
         return try {
             val user = auth.signInWithEmailAndPassword(email, password).await().user
+            if (user != null) {
+                println(user.uid)
+            }
             user?.let {
                 // Save user role if not already in Firestore
                 val userDoc = firestore.collection("Users").document(it.uid).get().await()
@@ -95,14 +102,13 @@ class GoogleAuthClient(private val context: Context, private val oneTapClient: S
         }
     }
 
-    suspend fun registerPatientWithEmail(email: String, password: String): signinresults {
+    suspend fun registerPatientWithEmail(firstName: String, lastName: String, email: String, password: String): signinresults {
         return try {
             val user = auth.createUserWithEmailAndPassword(email, password).await().user
             user?.let {
-                // Save user role as "patient" in Firestore
                 val userData = UserData(
                     userId = it.uid,
-                    username = it.displayName,
+                    username = "$firstName $lastName",
                     profilePictureUrl = it.photoUrl?.toString().toString(),
                     role = "patient"
                 )
@@ -112,7 +118,7 @@ class GoogleAuthClient(private val context: Context, private val oneTapClient: S
                 data = user?.run {
                     UserData(
                         userId = uid,
-                        username = displayName,
+                        username = "$firstName $lastName",
                         profilePictureUrl = photoUrl?.toString().toString(),
                         role = "patient"
                     )
@@ -124,6 +130,8 @@ class GoogleAuthClient(private val context: Context, private val oneTapClient: S
             signinresults(data = null, errorMessage = e.message)
         }
     }
+
+
 
     suspend fun signOut() {
         try {
