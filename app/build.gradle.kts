@@ -78,5 +78,6 @@ dependencies {
     implementation(libs.google.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation ("androidx.compose.material3:material3:1.1.0")
     implementation("com.google.firebase:firebase-firestore")
 }

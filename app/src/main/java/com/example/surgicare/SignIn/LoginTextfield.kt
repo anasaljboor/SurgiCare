@@ -1,41 +1,51 @@
-package com.example.surgicare.SignIn
+@file:OptIn(ExperimentalMaterial3Api::class)
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
+package com.example.surgicare.SignIn
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import com.example.surgicare.ui.theme.focusedTextfieldText
-import com.example.surgicare.ui.theme.textFieldContainer
-import com.example.surgicare.ui.theme.unfocusedTextfieldText
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.focusRequester
+
 
 @Composable
 fun LoginTextfield(
-    modifier: Modifier = Modifier,
     label: String,
-    trailing: String
+    trailing: String = "",
+    modifier: Modifier = Modifier,
+    onTrailingClick: (() -> Unit)? = null
 ) {
-    val uiColor = if (isSystemInDarkTheme()) Color.White else Color.Black
+    var text by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    var isFocused by remember { mutableStateOf(false) }
 
     TextField(
-        modifier = modifier,
-        value = "",
-        onValueChange = {},
-        label = {
-            Text(text = label, style = MaterialTheme.typography.labelMedium, color = uiColor)
-                },
-        colors = TextFieldDefaults.colors(
-            unfocusedPlaceholderColor = MaterialTheme.colorScheme.unfocusedTextfieldText,
-            focusedPlaceholderColor = MaterialTheme.colorScheme.focusedTextfieldText,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.textFieldContainer
-        ),
+        value = text,
+        onValueChange = { newText -> text = newText },
+        label = { Text(text = label) },
         trailingIcon = {
-            Text(text = trailing, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium), color = uiColor)
-        }
+            if (trailing.isNotEmpty() && onTrailingClick != null) {
+                Text(
+                    text = trailing,
+                    modifier = Modifier.clickable { onTrailingClick() }
+                )
+            }
+        },
+        modifier = modifier
+            .onFocusChanged { focusState -> isFocused = focusState.isFocused }
+            .focusRequester(focusRequester),
+        colors = TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = if (isFocused) Color.Blue else Color.Gray
+        )
     )
 }
