@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "634818751151",
+    "firebase_url": "https://surgicare-eb114-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "surgicare-eb114",
     "storage_bucket": "surgicare-eb114.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.surgicare"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "634818751151-bhm97t4hm5f0ce7taic9013koq8u3tmd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.surgicare",
+            "certificate_hash": "c4353c70ce94c0a57a3b030a560739b98037e49c"
+          }
+        },
+        {
+          "client_id": "634818751151-9b713bqsd6tr2ngahsi572rtdbqgla8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAhrw1davaozWyAZxbT08KT8vqz0TkaQvA"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "634818751151-9b713bqsd6tr2ngahsi572rtdbqgla8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -13,19 +13,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.surgicare.SignIn.GoogleAuthClient
 import com.example.surgicare.SignIn.SignInScreen
-
 import com.example.surgicare.SignIn.SignInViewModel
+import com.example.surgicare.SignIn.RegistrationScreen
+import com.example.surgicare.SignIn.RegistrationViewModel
+import com.example.surgicare.SignIn.RegistrationViewModelFactory
 import com.example.surgicare.ui.theme.SurgiCareTheme
+import com.example.surgicare.vitals.VitalsScreen
 import com.google.android.gms.auth.api.identity.Identity
 import kotlinx.coroutines.launch
 
@@ -56,7 +59,6 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "SignInScreen") {
                         composable("SignInScreen") {
-                            val context = LocalContext.current
                             val state by viewModel.state.collectAsStateWithLifecycle()
 
                             val launcher = rememberLauncherForActivityResult(
@@ -74,7 +76,9 @@ class MainActivity : ComponentActivity() {
                             )
 
                             SignInScreen(
-                                state = state,onSignInClick = {
+                                state = state,
+                                googleAuthClient = googleAuthClient,
+                                onSignInClick = {
                                     lifecycleScope.launch {
                                         val signInIntentSender = googleAuthClient.signIn()
                                         launcher.launch(
@@ -83,6 +87,36 @@ class MainActivity : ComponentActivity() {
                                             ).build()
                                         )
                                     }
+                                },
+                                onNavigateToRegister = {
+                                    navController.navigate("RegistrationScreen") // Trigger navigation to the Registration screen
+                                },
+                                onNavigateToVitals = {
+                                    navController.navigate("VitalsScreen") // Trigger navigation to the Vitals screen
+                                }
+                            )
+                        }
+                        composable("VitalsScreen") {
+                            VitalsScreen()
+                        }
+
+
+                        // Registration Screen Composable
+                        composable("RegistrationScreen") {
+                            val registrationViewModel: RegistrationViewModel = viewModel(
+                                factory = RegistrationViewModelFactory(googleAuthClient)
+                            )
+                            val registrationState by registrationViewModel.state.collectAsStateWithLifecycle()
+
+                            RegistrationScreen(
+                                state = registrationState,
+                                onRegisterClick = { firstName, lastName, email, password ->
+                                    registrationViewModel.registerUser(firstName, lastName, email, password)
+                                    navController.navigate("SignInScreen") // Navigate back to Sign-In screen after registration
+                                },
+                                googleAuthClient = googleAuthClient,
+                                onSignInClick = {
+                                    navController.navigate("SignInScreen") // Navigate back to Sign-In screen
                                 }
                             )
                         }
@@ -92,7 +126,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Correct placement inside the MainActivity class
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val YOUR_GOOGLE_SIGN_IN_REQUEST_CODE = 1001

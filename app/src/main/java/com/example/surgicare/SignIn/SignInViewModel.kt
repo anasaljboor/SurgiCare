@@ -44,14 +44,10 @@ class SignInViewModel(private val googleAuthClient: GoogleAuthClient) : ViewMode
     fun onSignInResult(result: signinresults) {
         _signInState.update {
             it.copy(
-                isSignInSuccessful = result.data != null,
+                isSignInSuccessful = result.data != null, // Ensure this is set correctly
                 signInError = result.errorMessage,
                 isLoading = false
             )
         }
-    }
-
-    fun resetSignInState() {
-        _signInState.update { SignInState() }
     }
 }
