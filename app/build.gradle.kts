@@ -53,7 +53,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -66,6 +65,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,7 +77,9 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.google.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
     implementation ("androidx.compose.material3:material3:1.1.0")
+    implementation ("androidx.compose.material:material-icons-extended:1.5.3")
     implementation("com.google.firebase:firebase-firestore")
 }

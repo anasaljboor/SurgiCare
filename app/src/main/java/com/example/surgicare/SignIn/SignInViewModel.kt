@@ -33,7 +33,7 @@ class SignInViewModel(private val googleAuthClient: GoogleAuthClient) : ViewMode
     fun handleSignInResult(intent: Intent) {
         viewModelScope.launch {
             try {
-                val signInResult = googleAuthClient.getSigninWithintent(intent)
+                val signInResult = googleAuthClient.getSignInWithIntent(intent)
                 onSignInResult(signInResult)
             } catch (e: Exception) {
                 _signInState.update { it.copy(signInError = e.message) }
@@ -41,7 +41,7 @@ class SignInViewModel(private val googleAuthClient: GoogleAuthClient) : ViewMode
         }
     }
 
-    fun onSignInResult(result: signinresults) {
+    fun onSignInResult(result: SignInResult) {
         _signInState.update {
             it.copy(
                 isSignInSuccessful = result.data != null, // Ensure this is set correctly
